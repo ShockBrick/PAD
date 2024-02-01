@@ -36,6 +36,15 @@ Pracę domową wykonujemy indywidualnie.
 
 import numpy as np
 import pandas as pd
+from dash import Dash, html, dcc, Input, Output 
+import plotly.express as px
+
+app = Dash(__name__)
+colors = {
+    'background': '#111111',
+    'text': '#7FDBFF'
+}
+
 data_  = pd.read_csv('messy_data.csv')
 #print(data_)
 #print(data_.loc[:,' price'].mean())
@@ -66,6 +75,9 @@ print(data_a)
 data_ap = pd.DataFrame(data_a,columns=['carat','clarity','color','cut','x dimension','y dimension','z dimension','depth','table','price'])
 
 print(data_ap)
+print('AAAA')
+print(data_ap['price'].mean())
+
 
 
 def Mean_Zero_Parameters( column_of_df):
@@ -80,6 +92,24 @@ def Mean_Zero_Parameters( column_of_df):
 
 
 
+def otliersDelete( column_of_df):
+    #Funckja w polach zadanej kolumny, które są równe zero (czyli byłe puste) wpisuje wartość średnią tej kolumny
+    print(column_of_df.mean())
+    apap=column_of_df.mean()
+    for index1 in column_of_df.index:
+        if column_of_df[index1]>5*apap:
+            column_of_df[index1]= apap 
+
+    print(column_of_df.mean())
+
+
+def toLowerColumn( column_of_df):
+    #Funckja w polach zadanej kolumny, które są równe zero (czyli byłe puste) wpisuje wartość średnią tej kolumny
+    for index1 in column_of_df.index:
+        column_of_df[index1]=column_of_df[index1].lower()
+
+
+
 Mean_Zero_Parameters(data_ap.loc[:,'carat'])
 Mean_Zero_Parameters(data_ap.loc[:,'x dimension'])
 Mean_Zero_Parameters(data_ap.loc[:,'y dimension'])
@@ -89,6 +119,57 @@ Mean_Zero_Parameters(data_ap.loc[:,'table'])
 Mean_Zero_Parameters(data_ap.loc[:,'price'])
 
 
+otliersDelete(data_ap.loc[:,'carat'])
+otliersDelete(data_ap.loc[:,'x dimension'])
+otliersDelete(data_ap.loc[:,'y dimension'])
+otliersDelete(data_ap.loc[:,'z dimension'])
+otliersDelete(data_ap.loc[:,'depth'])
+otliersDelete(data_ap.loc[:,'table'])
+otliersDelete(data_ap.loc[:,'price'])
+
+
+toLowerColumn(data_ap.loc[:,'clarity'])
+toLowerColumn(data_ap.loc[:,'color'])
+toLowerColumn(data_ap.loc[:,'cut'])
+
+
+
+
+fig = px.scatter(data_ap, x='carat', y='price')
+
+fig.update_layout(
+    plot_bgcolor=colors['background'],
+    paper_bgcolor=colors['background'],
+    font_color=colors['text']
+)
+
+app.layout = html.Div([
+    html.Div(children=[
+        html.Label('X axes'),
+        dcc.Dropdown(['carat','clarity','color','cut','x dimension','y dimension','z dimension','depth','table','price'], 'carat',id='Ydropdown'),
+        html.Label('Y axes'),
+        dcc.Dropdown(['carat','clarity','color','cut','x dimension','y dimension','z dimension','depth','table','price'], 'price',id='Xdropdown'),
+    ], style={'padding': 10, 'flex': 'row'}),
+
+    dcc.Graph(
+        id='example-graph-2',
+        figure=fig
+    )
+
+], style={'display': 'flex', 'flex-direction': 'column'})
+
+
+@app.callback(
+    Output('example-graph-2', 'figure'),
+    Input('Ydropdown', 'value'),
+    Input('Xdropdown', 'value'))
+def update_figure(newY,newX):
+    fig = px.scatter(data_ap, x=newX, y=newY)
+
+    return fig
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
 #print(data_ap.loc[:,'carat'].mean())
 #apap=data_ap.loc[:,'carat'].mean()
 #for index1 in data_ap.index:
