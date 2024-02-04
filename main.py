@@ -110,7 +110,8 @@ def Mean_Zero_Parameters( column_of_df):
     print(column_of_df.mean())
     apap=column_of_df.mean()
     for index1 in column_of_df.index:
-        if column_of_df[index1]==0:
+        if pd.isna(column_of_df[index1]):
+            print('NotANumber if')
             column_of_df[index1]= apap 
 
     print(column_of_df.mean())
@@ -177,13 +178,13 @@ Mean_Zero_Parameters(data_ap.loc[:,'price'])
 data_ap.loc[:,'price'] = np.round(np.array(data_ap.loc[:,'price'], dtype=np.float64), 2)
 
 print(data_ap.info())
-'''aabb="xdimension"
+aabb="xdimension"
 bbaa="ydimension"
 ccnn=aabb+" ~ "+bbaa
 model = smf.ols(formula=ccnn,data=data_ap).fit()
 print(model.summary())
 '''
-
+'''
 
 otliersDelete(data_ap.loc[:,'carat'])
 otliersDelete(data_ap.loc[:,'xdimension'])
@@ -201,13 +202,7 @@ toLowerColumn(data_ap.loc[:,'cut'])
 
 
 fig = px.scatter(data_ap, x='carat', y='price')
-'''print(data_ap)
-fig.update_layout(
-    plot_bgcolor=colors['background'],
-    paper_bgcolor=colors['background'],
-    font_color=colors['text']
-)
-'''
+
 app.layout = html.Div([
     html.Div(children=[
         html.Label('X axes'),
@@ -284,3 +279,4 @@ if __name__ == '__main__':
 
 #print(np.where(pd.isnull(data_.columns.)))
 #import statsmodels.api as sm
+
